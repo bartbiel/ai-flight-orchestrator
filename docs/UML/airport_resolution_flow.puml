@@ -1,0 +1,41 @@
+@startuml
+
+title Airport Resolution Architecture
+
+actor User
+
+package "API Layer" {
+    [Airport Controller]
+}
+
+package "Orchestration Layer" {
+    [Airport Resolver Service]
+}
+
+package "Retrieval Layer" {
+    [Airport Repository]
+    [Airport Retriever]
+}
+
+package "Storage Layer" {
+    database "airports.csv" as CSV
+    database "FAISS Index" as FAISS
+}
+
+package "LLM Layer" {
+    [Mistral Provider]
+}
+
+User --> [Airport Controller]
+
+[Airport Controller] --> [Airport Resolver Service]
+
+[Airport Resolver Service] --> [Airport Repository]
+[Airport Repository] --> CSV
+
+[Airport Resolver Service] --> [Airport Retriever] : fallback
+[Airport Retriever] --> FAISS
+
+[Airport Resolver Service] --> [Mistral Provider] : optional
+
+@enduml
